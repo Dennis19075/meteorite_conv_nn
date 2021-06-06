@@ -3,7 +3,7 @@
 
 # import the necessary packages
 from pyimagesearch import config
-from tensorflow.keras.applications import MobileNetV3Large
+from tensorflow.keras.applications import VGG16
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Dense
@@ -29,7 +29,7 @@ data = []
 labels = []
 bboxes = []
 imagePaths = []
-IMG_SIZE = 416
+IMG_SIZE = 224
 
 # loop over all CSV files in the annotations directory
 for csvPath in paths.list_files(config.ANNOTS_PATH, validExts=(".csv")):
@@ -90,7 +90,7 @@ if len(lb.classes_) == 1:
 # partition the data into training and testing splits using 80% of
 # the data for training and the remaining 20% for testing
 split = train_test_split(data, labels, bboxes, imagePaths,
-	test_size=0.20, random_state=42)
+	test_size=0.10, random_state=42)
 
 # unpack the data split
 (trainImages, testImages) = split[:2]
@@ -105,16 +105,16 @@ f = open(config.TEST_PATHS, "w")
 f.write("\n".join(testPaths))
 f.close()
 
-# load the MobileNetV3Large network, ensuring the head FC layers are left off
-mobile = MobileNetV3Large(weights="imagenet", include_top=False,
+# load the VGG16 network, ensuring the head FC layers are left off
+model = VGG16(weights="imagenet", include_top=False,
 	input_tensor=Input(shape=(IMG_SIZE, IMG_SIZE, 3)))
 
-# freeze all MobileNetV3Large layers so they will *not* be updated during the
+# freeze all VGG16 layers so they will *not* be updated during the
 # training process
-mobile.trainable = False
+model.trainable = False
 
-# flatten the max-pooling output of MobileNetV3Large
-flatten = mobile.output
+# flatten the max-pooling output of VGG16
+flatten = model.output
 flatten = Flatten()(flatten)
 
 # construct a fully-connected layer header to output the predicted
@@ -137,14 +137,14 @@ softmaxHead = Dense(len(lb.classes_), activation="softmax",
 # put together our model which accept an input image and then output
 # bounding box coordinates and a class label
 model = Model(
-	inputs=mobile.input,
+	inputs=model.input,
 	outputs=(bboxHead, softmaxHead))
 
 # define a dictionary to set the loss methods -- categorical
 # cross-entropy for the class label head and mean absolute error
 # for the bounding box head
 losses = {
-	"class_label": "categorical_crossentropy",
+	"class_label": "binary_crossentropy",
 	"bounding_box": "mean_squared_error",
 }
 
