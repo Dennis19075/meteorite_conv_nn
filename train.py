@@ -88,7 +88,7 @@ if len(lb.classes_) == 1:
 	labels = to_categorical(labels)
 
 # partition the data into training and testing splits using 80% of
-# the data for training and the remaining 20% for testing
+# the data for training and the remaining 10% for testing
 split = train_test_split(data, labels, bboxes, imagePaths,
 	test_size=0.10, random_state=42)
 
@@ -131,7 +131,7 @@ softmaxHead = Dense(512, activation="relu")(flatten)
 softmaxHead = Dropout(0.5)(softmaxHead)
 softmaxHead = Dense(512, activation="relu")(softmaxHead)
 softmaxHead = Dropout(0.5)(softmaxHead)
-softmaxHead = Dense(len(lb.classes_), activation="softmax",
+softmaxHead = Dense(len(lb.classes_), activation="sigmoid",
 	name="class_label")(softmaxHead)
 
 # put together our model which accept an input image and then output
