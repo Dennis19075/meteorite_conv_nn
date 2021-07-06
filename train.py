@@ -194,6 +194,10 @@ f = open(config.LB_PATH, "wb")
 f.write(pickle.dumps(lb))
 f.close()
 
+print("Evaluate on test data")
+results = model.evaluate(testImages, testTargets, batch_size=config.BATCH_SIZE)
+print("test loss, test acc:", results)
+
 # plot the total loss, label loss, and bounding box loss
 lossNames = ["loss", "class_label_loss", "bounding_box_loss"]
 N = np.arange(0, config.NUM_EPOCHS)
