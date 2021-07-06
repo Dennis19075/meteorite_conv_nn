@@ -236,3 +236,11 @@ plt.legend(loc="lower left")
 # save the accuracies plot
 plotPath = os.path.sep.join([config.PLOTS_PATH, "accs.png"])
 plt.savefig(plotPath)
+
+  #NOTA IMPORTANTE PARA ENTRANAR 
+
+#  If you're doing object localization task then you shouldn't using 'accuracy' as your metrics, because docs of compile() said:
+
+# When you pass the strings 'accuracy' or 'acc', we convert this to one of tf.keras.metrics.BinaryAccuracy, tf.keras.metrics.CategoricalAccuracy, tf.keras.metrics.SparseCategoricalAccuracy based on the loss function used and the model output shape
+
+# You should using tf.keras.metrics.MeanAbsoluteError, IoU(Intersection Over Union) or mAP(Mean Average Precision) instead
